@@ -1,0 +1,173 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head><script>window.huggingface={variables:{"SPACE_CREATOR_USER_ID":"68bedee0b1df295e3b771457"}};</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Partner Verification</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        .rating-stars {
+            color: ##64943e;
+            font-size: 1.5rem;
+        }
+        .rating-stars .empty {
+            color: #d1d5db;
+        }
+        .input-container {
+            position: relative;
+        }
+        .input-container i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="max-w-4xl mx-auto px-4 py-12">
+        <div class="text-center mb-12" data-aos="fade-down">
+            <h1 class="text-4xl font-bold text-gray-800 mb-4">Partner Verification</h1>
+            <p class="text-lg text-gray-600">Verify partner credentials and ratings</p>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden" data-aos="fade-up">
+            <div class="p-8">
+                <div class="input-container mb-8">
+                    <i data-feather="search"></i>
+                    <input 
+                        type="text" 
+                        id="partnerId" 
+                        placeholder="Enter Partner ID (e.g. 4937278)" 
+                        class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                    >
+                </div>
+                
+                <button 
+                    id="verifyBtn"
+                    class="w-full bg-blue-600 hover:bg-green                                                                                                                                                        -700 text-white font-medium py-3 px-6 rounded-lg transition duration-300 flex items-center justify-center"
+                >
+                    <i data-feather="check-circle" class="mr-2"></i>
+                    Verify Partner
+                </button>
+            </div>
+
+            <div id="resultContainer" class="hidden border-t border-gray-200 p-8 bg-gray-50">
+                <div class="flex flex-col md:flex-row gap-8">
+                    <div class="flex-1">
+                        <h2 class="text-2xl font-semibold text-gray-800 mb-6">Partner Details</h2>
+                        
+                        <div class="space-y-6">
+                            <div>
+                                <p class="text-sm text-gray-500">Name</p>
+                                <p id="partnerName" class="text-xl font-medium text-gray-800">-</p>
+                            </div>
+                            
+                            <div>
+                                <p class="text-sm text-gray-500">Rating</p>
+                                <div class="flex items-center mt-1">
+                                    <div id="ratingStars" class="rating-stars mr-2">
+                                        <!-- Stars will be inserted here by JS -->
+                                    </div>
+                                    <span id="ratingValue" class="text-gray-700">-</span>
+                                    <span class="text-gray-500 ml-1">(<span id="ratingCount">0</span> ratings)</span>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <p class="text-sm text-gray-500">Completed Projects</p>
+                                <p id="projectsCount" class="text-xl font-medium text-gray-800">-</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex-1">
+                        <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                            <div class="flex items-center mb-4">
+                                <div class="bg-blue-100 p-3 rounded-full mr-4">
+                                    <i data-feather="shield" class="text-blue-600"></i>
+                                </div>
+                                <h3 class="text-lg font-semibold text-gray-800">Verified Partner</h3>
+                            </div>
+                            <p class="text-gray-600">This partner has been verified through our certification process and maintains excellent ratings from merchants.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        AOS.init();
+        feather.replace();
+        
+        // Mock database (in a real implementation, this would be replaced with Wix CMS API calls)
+        const partnersDatabase = [
+            {
+                id: "4524955",
+                name: "Ay Digitals",
+                ratingValue: 4.5,
+                numberOfRatings: 42,
+                completedProjects: 28
+            },
+            // Add more partners as needed
+        ];
+        
+        document.getElementById('verifyBtn').addEventListener('click', function() {
+            const partnerId = document.getElementById('partnerId').value.trim();
+            const resultContainer = document.getElementById('resultContainer');
+            
+            if (!partnerId) {
+                alert('Please enter a Partner ID');
+                return;
+            }
+            
+            // Find partner in database
+            const partner = partnersDatabase.find(p => p.id === partnerId);
+            
+            if (partner) {
+                // Display partner info
+                document.getElementById('partnerName').textContent = partner.name;
+                document.getElementById('ratingValue').textContent = partner.ratingValue;
+                document.getElementById('ratingCount').textContent = partner.numberOfRatings;
+                document.getElementById('projectsCount').textContent = partner.completedProjects;
+                
+                // Render stars
+                const starsContainer = document.getElementById('ratingStars');
+                starsContainer.innerHTML = '';
+                
+                const fullStars = Math.floor(partner.ratingValue);
+                const hasHalfStar = partner.ratingValue % 1 >= 0.5;
+                
+                // Full stars
+                for (let i = 0; i < fullStars; i++) {
+                    starsContainer.innerHTML += '<i data-feather="star" class="fill-current"></i>';
+                }
+                
+                // Half star
+                if (hasHalfStar) {
+                    starsContainer.innerHTML += '<i data-feather="star" class="fill-current" style="clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%)"></i>';
+                }
+                
+                // Empty stars
+                const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+                for (let i = 0; i < emptyStars; i++) {
+                    starsContainer.innerHTML += '<i data-feather="star" class="empty"></i>';
+                }
+                
+                feather.replace();
+                resultContainer.classList.remove('hidden');
+            } else {
+                alert('Partner not found. Please check the ID and try again.');
+                resultContainer.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
